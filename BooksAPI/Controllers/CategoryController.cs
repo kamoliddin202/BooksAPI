@@ -11,7 +11,7 @@ namespace BooksAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -38,15 +38,46 @@ namespace BooksAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(AddCategoryDto addCategoryDto)
         {
-            await _categoryService.AddCategoryAsync(addCategoryDto);
-            return Created();
+            try
+            {
+                await _categoryService.AddCategoryAsync(addCategoryDto);
+                return Created();
+            }
+            catch (CategoryException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPut]
         public async Task<IActionResult> Put(UpdateCategoryDto updateCategoryDto)
         {
-            await _categoryService.UpdateCategoryAsync(updateCategoryDto);
-            return Ok("Category Updated !");
+            try
+            {
+                await _categoryService.UpdateCategoryAsync(updateCategoryDto);
+                return Ok("Category Updated !");
+            }
+            catch (CategoryException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+           
         }
 
         [HttpDelete("{id}")]

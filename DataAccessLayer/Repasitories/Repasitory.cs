@@ -22,7 +22,11 @@ namespace DataAccessLayer.Repasitories
         }
 
         public async Task<IEnumerable<TEntity>> GetAllEntitiesAsync()
-        => await _appDbContext.Set<TEntity>().ToListAsync();
+        {
+           return await _appDbContext.Set<TEntity>()
+                            .AsNoTracking()
+                            .ToListAsync();
+        }
 
         public async Task<TEntity> GetEntityByIdAsync(int id)
         => await _appDbContext.Set<TEntity>().FindAsync(id);

@@ -20,8 +20,23 @@ namespace BusinessLogicLayer.Services
         }
         public async Task AddCategoryAsync(AddCategoryDto categoryDto)
         {
-            if (categoryDto == null)
+            if (categoryDto is null)
+            {
                 throw new ArgumentNullException(nameof(categoryDto));
+            }
+
+            if (string.IsNullOrEmpty(categoryDto.Name))
+            {
+                throw new CategoryException("Category Name required !");
+            }
+
+            var list = await _unitOfWork.Category.GetAllEntitiesAsync();
+            if (list.Any(c => c.Name == categoryDto.Name))
+            {
+                throw new CategoryException($"{categoryDto.Name} Bunday category allaqachon bor !");
+            }
+                
+
             var mapped = _mapper.Map<Category>(categoryDto);
             await _unitOfWork.Category.AddEntityAsync(mapped);
             await _unitOfWork.SaveChangesAsync();
@@ -82,6 +97,22 @@ namespace BusinessLogicLayer.Services
 
         public async Task UpdateCategoryAsync(UpdateCategoryDto categoryDto)
         {
+            if (categoryDto is null)
+            {
+                throw new ArgumentNullException(nameof(categoryDto));
+            }
+
+            if (string.IsNullOrEmpty(categoryDto.Name))
+            {
+                throw new CategoryException("Category Name required !");
+            }
+
+            var list = await _unitOfWork.Category.GetAllEntitiesAsync();
+            if (list.Any(c => c.Name == categoryDto.Name && c.Id != categoryDto.Id))
+            {
+                throw new CategoryException($"{categoryDto.Name} Bunday category allaqachon bor !");
+            }
+
             var category = await _unitOfWork.Category.GetEntityByIdAsync(categoryDto.Id);   
             if (category == null)
                 throw new KeyNotFoundException(nameof(category));
